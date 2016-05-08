@@ -28,7 +28,7 @@ module.exports = function libify(content) {
     }
 
     filepath = get(this.resourcePath);
-    if (filepath === this.resourcePath) {
+    if (filepath === this.resourcePath || filepath === this.resourcePath + '.js') {
       return content;
     }
 
