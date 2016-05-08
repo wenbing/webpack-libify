@@ -44,7 +44,7 @@ module.exports = function libify(content) {
   }
 
   filepath = get(this.resourcePath);
-  if (filepath === this.resourcePath) {
+  if (filepath === this.resourcePath || filepath === this.resourcePath + '.js') {
     process.nextTick(() => callback(null, content));
     return;
   }
