@@ -1,6 +1,6 @@
 {
   "name": "webpack-libify",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "libfiy your src",
   "main": "index.js",
   "scripts": {
