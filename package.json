@@ -30,6 +30,7 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
+    "js-tokens": "^2.0.0",
     "mkdirp": "^0.5.1"
   }
 }
