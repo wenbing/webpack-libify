@@ -22,6 +22,6 @@ module.postLoaders: [ { loader: libify } ]
 ## __webpack_public_path__
 
 基于 `require('js-tokens')` 技术，
-使用类 `require("../webpack.config")[0].output.publicPath` 替换掉 __webpack_public_path__
+使用类 `require("../webpack.config")[0].output.publicPath` 替换掉 \_\_webpack_public_path\_\_
 
 
