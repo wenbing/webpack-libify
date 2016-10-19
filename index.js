@@ -11,7 +11,6 @@ function get(file, basedir) {
   /* eslint no-param-reassign:0, prefer-template:0 */
   const ext = path.extname(file);
   let libfile = basedir + file.slice(basedir.length).replace('/src/', '/lib/');
-  console.info(libfile);
   if (ext === '' || (ext !== '.js' && ext !== '.json')) {
     libfile = libfile + '.js';
   }
