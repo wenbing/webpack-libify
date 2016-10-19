@@ -7,14 +7,15 @@ const jsTokens = require('js-tokens');
 
 const mkdirp = require('mkdirp');
 
-function get(file) {
+function get(file, basedir) {
   /* eslint no-param-reassign:0, prefer-template:0 */
   const ext = path.extname(file);
-  file = file.replace('/src/', '/lib/');
+  let libfile = basedir + file.slice(basedir.length).replace('/src/', '/lib/');
+  console.info(libfile);
   if (ext === '' || (ext !== '.js' && ext !== '.json')) {
-    file = file + '.js';
+    libfile = libfile + '.js';
   }
-  return file;
+  return libfile;
 }
 
 function replacement(resourcePath, content, options) {
@@ -43,6 +44,7 @@ module.exports = function libify(content) {
   /* eslint consistent-return:0 */
   this.cacheable();
   const callback = this.async();
+  const basedir = this.options.context;
   let filepath;
 
   if (!callback) {
@@ -50,7 +52,7 @@ module.exports = function libify(content) {
       return content;
     }
 
-    filepath = get(this.resourcePath);
+    filepath = get(this.resourcePath, basedir);
 
     if (filepath === this.resourcePath || filepath === this.resourcePath + '.js') {
       return content;
@@ -67,7 +69,7 @@ module.exports = function libify(content) {
     return;
   }
 
-  filepath = get(this.resourcePath);
+  filepath = get(this.resourcePath, basedir);
 
   if (filepath === this.resourcePath || filepath === this.resourcePath + '.js') {
     process.nextTick(() => callback(null, content));
