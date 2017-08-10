@@ -1,5 +1,5 @@
 /* eslint strict:0 */
-// 'use strict';
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
@@ -53,12 +53,10 @@ module.exports = function libify(content) {
     const { relative } = path;
     content = content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
       const FullPath = getAliasPath(aliasName)
-      return rawContent.replace(matched, matched.replace(aliasName, FullPath));
+      return rawContent.replace(matched, matched.replace(aliasName, FullPath).replace('/src/', '/lib/'));
     });
   }
   if (!callback) {
-    console.log('sync')
-    console.log(this.resourcePath)
     if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
       return content;
     }
@@ -73,8 +71,6 @@ module.exports = function libify(content) {
     fs.writeFileSync(filepath, replacement(this.resourcePath, content, this.options));
     return content;
   }
-  console.log('Async')
-  console.log(this.resourcePath)
   // async mode
   if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
     process.nextTick(() => callback(null, content));
