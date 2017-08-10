@@ -1,3 +1,3 @@
 export const person = {
-  name: 'Jason'
-}
+  name: 'Jason',
+};

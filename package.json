@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node test/ && node test/fixtures/lib/libify/foo",
     "start": "webpack --config test/webpack.config.js --watch",
-    "debug": "node --inspect ./node_modules/.bin/webpack --config test/webpack.config.js --watch"
+    "debug": "node --inspect ./node_modules/.bin/webpack --config test/webpack.config.js --watch",
+    "lint": "eslint test/src"
   },
   "repository": {
     "type": "git",

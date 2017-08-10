@@ -50,14 +50,17 @@ module.exports = function libify(content) {
     if (!alias) return content;
     const getAliasPath = (dirname) => alias[dirname];
     const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
-    Object.keys(alias).forEach(aliasName => {
-      const aliasRe = getMatchRe('(' + aliasName + ')');
-      content = content.replace(aliasRe, (matched, $, aliasName) => {
-        const FullPath = getAliasPath(aliasName)
-        return matched.replace(aliasName, FullPath).replace('/src/', '/lib/');
-      });
+    const allAliasRe = getMatchRe('(' + Object.keys(alias).join('|') +')');
+    const replaceSrcToLib = (absolutePath) => {
+      const relativePathAry = absolutePath.slice(basedir.length).split(path.sep);
+      const srcIndex = relativePathAry.indexOf('src');
+      relativePathAry[srcIndex] = 'lib';
+      return path.join(basedir, relativePathAry.join(path.sep));
+    };
+    return content.replace(allAliasRe, (matched, $, aliasName) => {
+      const FullLibPath = replaceSrcToLib(getAliasPath(aliasName));
+      return matched.replace(aliasName, FullLibPath);
     });
-    return content;
   }
   if (!callback) {
     if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {

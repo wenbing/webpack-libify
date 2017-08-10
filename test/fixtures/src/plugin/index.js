@@ -1,3 +1,3 @@
-export default function say () {
-  console.log('From Plugin...')
+export default function say() {
+  console.log('From Plugin...');
 }
