@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const { join } = require('path')
 const webpack = require('webpack');
 const tape = require('tape');
 const rimraf = require('rimraf');
@@ -31,6 +31,11 @@ tape('webpack libify', (t) => {
           loader: libify,
         },
       ],
+    },
+    resolve: {
+      alias: {
+        common: join(__dirname, 'fixtures/src/common')
+      },
     },
   })
   .run((err, stats) => {
