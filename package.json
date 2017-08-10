@@ -4,7 +4,8 @@
   "description": "libfiy your src",
   "main": "index.js",
   "scripts": {
-    "test": "node test/"
+    "test": "node test/",
+    "start": "webpack --config test/webpack.config.js --watch"
   },
   "repository": {
     "type": "git",

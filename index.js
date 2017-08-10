@@ -1,5 +1,5 @@
 /* eslint strict:0 */
-'use strict';
+// 'use strict';
 
 const fs = require('fs');
 const path = require('path');
@@ -45,8 +45,27 @@ module.exports = function libify(content) {
   const callback = this.async();
   const basedir = this.options.context;
   let filepath;
-
+  const alias = this.options.resolve.alias;
+  const getAliasPath = (dirname) => alias[dirname];
+  // const getMatchRe = (aliasName) => new RegExp("require\\(([\"'])" + aliasName + "[\s\S]*?\\1\\)", 'g');
+  const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
+  // const getMatchRe = (aliasName) => new RegExp(`require(["'])${aliasName}"\w+\1`);
+  // cont
+  console.log('#######################   Anylize Alias #######################')
+  // Object.keys(alias).forEach(item => {
+  //   console.log('Alias => ', item)
+  //   console.log(content.match(getMatchRe(item)))
+  // });
+  const allAliasReg = getMatchRe('(' + Object.keys(alias).join('|') + ')');
+  // console.log(content.re)
+  const update = content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
+    return rawContent.replace(matched, getAliasPath(aliasName));
+    // console.log(args)
+  })
+  // console.log(update)
   if (!callback) {
+    console.log('sync')
+    console.log(this.resourcePath)
     if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
       return content;
     }
@@ -61,7 +80,8 @@ module.exports = function libify(content) {
     fs.writeFileSync(filepath, replacement(this.resourcePath, content, this.options));
     return content;
   }
-
+  console.log('Async')
+  console.log(this.resourcePath)
   // async mode
   if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
     process.nextTick(() => callback(null, content));
