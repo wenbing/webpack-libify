@@ -46,17 +46,18 @@ module.exports = function libify(content) {
   const basedir = this.options.context;
   let filepath;
   const alias = (this.options.resolve || {}).alias;
-
   const getReplacedContent = (content) => {
     if (!alias) return content;
     const getAliasPath = (dirname) => alias[dirname];
     const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
-    const allAliasReg = getMatchRe('(' + Object.keys(alias).join('|') + ')');
-    const { relative } = path;
-    return content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
-      const FullPath = getAliasPath(aliasName)
-      return rawContent.replace(matched, matched.replace(aliasName, FullPath).replace('/src/', '/lib/'));
+    Object.keys(alias).forEach(aliasName => {
+      const aliasRe = getMatchRe('(' + aliasName + ')');
+      content = content.replace(aliasRe, (matched, $, aliasName, index, rawContent) => {
+        const FullPath = getAliasPath(aliasName)
+        return matched.replace(aliasName, FullPath).replace('/src/', '/lib/');
+      });
     });
+    return content;
   }
   if (!callback) {
     if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {

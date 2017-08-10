@@ -1,6 +1,7 @@
 const { join } = require('path')
 const libify = require.resolve('../');
 
+const get = (moduleName) => join(__dirname, `fixtures/src/${moduleName}`)
 module.exports = {
   context: __dirname,
   entry: './fixtures/src/libify/foo.js',
@@ -26,7 +27,9 @@ module.exports = {
   },
   resolve: {
     alias: {
-      common: join(__dirname, 'fixtures/src/common')
+      common: get('common'),
+      plugin: get('plugin'),
+      com: get('com'),
     },
   },
 }
