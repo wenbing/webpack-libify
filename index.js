@@ -46,12 +46,14 @@ module.exports = function libify(content) {
   const basedir = this.options.context;
   let filepath;
   const alias = (this.options.resolve || {}).alias;
-  if (alias) {
+
+  const getReplacedContent = (content) => {
+    if (!alias) return content;
     const getAliasPath = (dirname) => alias[dirname];
     const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
     const allAliasReg = getMatchRe('(' + Object.keys(alias).join('|') + ')');
     const { relative } = path;
-    content = content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
+    return content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
       const FullPath = getAliasPath(aliasName)
       return rawContent.replace(matched, matched.replace(aliasName, FullPath).replace('/src/', '/lib/'));
     });
@@ -68,7 +70,7 @@ module.exports = function libify(content) {
     }
 
     mkdirp.sync(path.dirname(filepath));
-    fs.writeFileSync(filepath, replacement(this.resourcePath, content, this.options));
+    fs.writeFileSync(filepath, replacement(this.resourcePath, getReplacedContent(content), this.options));
     return content;
   }
   // async mode
@@ -90,7 +92,7 @@ module.exports = function libify(content) {
       return;
     }
     content = replacement(this.resourcePath, content, this.options);
-    fs.writeFile(filepath, content, (fserr) => callback(fserr, content));
+    fs.writeFile(filepath, getReplacedContent(content), (fserr) => callback(fserr, content));
   });
 
   return;
