@@ -52,7 +52,7 @@ module.exports = function libify(content) {
     const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
     Object.keys(alias).forEach(aliasName => {
       const aliasRe = getMatchRe('(' + aliasName + ')');
-      content = content.replace(aliasRe, (matched, $, aliasName, index, rawContent) => {
+      content = content.replace(aliasRe, (matched, $, aliasName) => {
         const FullPath = getAliasPath(aliasName)
         return matched.replace(aliasName, FullPath).replace('/src/', '/lib/');
       });
