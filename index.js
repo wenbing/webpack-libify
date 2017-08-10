@@ -45,24 +45,17 @@ module.exports = function libify(content) {
   const callback = this.async();
   const basedir = this.options.context;
   let filepath;
-  const alias = this.options.resolve.alias;
-  const getAliasPath = (dirname) => alias[dirname];
-  // const getMatchRe = (aliasName) => new RegExp("require\\(([\"'])" + aliasName + "[\s\S]*?\\1\\)", 'g');
-  const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
-  // const getMatchRe = (aliasName) => new RegExp(`require(["'])${aliasName}"\w+\1`);
-  // cont
-  console.log('#######################   Anylize Alias #######################')
-  // Object.keys(alias).forEach(item => {
-  //   console.log('Alias => ', item)
-  //   console.log(content.match(getMatchRe(item)))
-  // });
-  const allAliasReg = getMatchRe('(' + Object.keys(alias).join('|') + ')');
-  // console.log(content.re)
-  const update = content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
-    return rawContent.replace(matched, getAliasPath(aliasName));
-    // console.log(args)
-  })
-  // console.log(update)
+  const alias = (this.options.resolve || {}).alias;
+  if (alias) {
+    const getAliasPath = (dirname) => alias[dirname];
+    const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
+    const allAliasReg = getMatchRe('(' + Object.keys(alias).join('|') + ')');
+    const { relative } = path;
+    content = content.replace(allAliasReg, (matched, $, aliasName, index, rawContent) => {
+      const FullPath = getAliasPath(aliasName)
+      return rawContent.replace(matched, matched.replace(aliasName, FullPath));
+    });
+  }
   if (!callback) {
     console.log('sync')
     console.log(this.resourcePath)

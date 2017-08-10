@@ -6,5 +6,6 @@ class Foobar {}
 const foo = 'Bar';
 
 const bar = () => 'Foo';
+console.log("Hello")
 
 module.exports = `${bar} ${foo}`;
