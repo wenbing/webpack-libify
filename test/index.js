@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const { join } = require('path')
 const webpack = require('webpack');
 const tape = require('tape');
 const rimraf = require('rimraf');
@@ -7,32 +7,9 @@ const rimraf = require('rimraf');
 const libify = require.resolve('../');
 
 rimraf.sync(`${__dirname}/fixtures/lib/`);
-
+const config = require('./webpack.config')
 tape('webpack libify', (t) => {
-  webpack({
-    context: __dirname,
-    entry: './fixtures/src/libify/foo.js',
-    output: {
-      filename: 'foo.js',
-      path: `${__dirname}/fixtures/dist/libify`,
-    },
-    module: {
-      loaders: [
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          query: {
-            presets: ['es2015', 'react'],
-          },
-        },
-      ],
-      postLoaders: [
-        {
-          loader: libify,
-        },
-      ],
-    },
-  })
+  webpack(config)
   .run((err, stats) => {
     if (err) {
       t.ifError(err);

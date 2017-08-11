@@ -45,7 +45,23 @@ module.exports = function libify(content) {
   const callback = this.async();
   const basedir = this.options.context;
   let filepath;
-
+  const alias = (this.options.resolve || {}).alias;
+  const getReplacedContent = (content) => {
+    if (!alias || !Object.keys(alias).length) return content;
+    const getAliasPath = (dirname) => alias[dirname];
+    const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
+    const allAliasRe = getMatchRe('(' + Object.keys(alias).join('|') +')');
+    const replaceSrcToLib = (absolutePath) => {
+      const relativePathAry = absolutePath.slice(basedir.length).split(path.sep);
+      const srcIndex = relativePathAry.indexOf('src');
+      relativePathAry[srcIndex] = 'lib';
+      return path.join(basedir, relativePathAry.join(path.sep));
+    };
+    return content.replace(allAliasRe, (matched, $, aliasName) => {
+      const FullLibPath = replaceSrcToLib(getAliasPath(aliasName));
+      return matched.replace(aliasName, FullLibPath);
+    });
+  }
   if (!callback) {
     if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
       return content;
@@ -58,10 +74,9 @@ module.exports = function libify(content) {
     }
 
     mkdirp.sync(path.dirname(filepath));
-    fs.writeFileSync(filepath, replacement(this.resourcePath, content, this.options));
+    fs.writeFileSync(filepath, replacement(this.resourcePath, getReplacedContent(content), this.options));
     return content;
   }
-
   // async mode
   if (this.resourcePath.split(path.sep).indexOf('node_modules') !== -1) {
     process.nextTick(() => callback(null, content));
@@ -81,7 +96,7 @@ module.exports = function libify(content) {
       return;
     }
     content = replacement(this.resourcePath, content, this.options);
-    fs.writeFile(filepath, content, (fserr) => callback(fserr, content));
+    fs.writeFile(filepath, getReplacedContent(content), (fserr) => callback(fserr, content));
   });
 
   return;
