@@ -47,7 +47,7 @@ module.exports = function libify(content) {
   let filepath;
   const alias = (this.options.resolve || {}).alias;
   const getReplacedContent = (content) => {
-    if (!alias) return content;
+    if (!alias || !Object.keys(alias).length) return content;
     const getAliasPath = (dirname) => alias[dirname];
     const getMatchRe = (aliasName) => new RegExp('require\\((["\'])' + aliasName + '[\\s\\S]*?\\1\\)', 'g');
     const allAliasRe = getMatchRe('(' + Object.keys(alias).join('|') +')');
