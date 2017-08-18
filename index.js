@@ -23,20 +23,13 @@ function replacement(resourcePath, content, options) {
   }
   jsTokens.lastIndex = 0;
   const parts = content.match(jsTokens);
-  const out = [];
   const webpackConfig = path.relative(
     path.dirname(resourcePath),
     path.join(options.context, 'webpack.config')
   );
   const publicPath = 'require(' + JSON.stringify(webpackConfig) + ')[0].output.publicPath';
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i] === '__webpack_public_path__') {
-      out.push(publicPath);
-    } else {
-      out.push(parts[i]);
-    }
-  }
-  return out.join('');
+  const out = parts.map(val => (val === '__webpack_public_path__' ? publicPath : val)).join('');
+  return out;
 }
 
 module.exports = function libify(content) {
