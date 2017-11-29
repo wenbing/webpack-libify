@@ -11,6 +11,10 @@ function get(file, basedir) {
   /* eslint no-param-reassign:0, prefer-template:0 */
   const ext = path.extname(file);
   let libfile = basedir + file.slice(basedir.length).replace('/src/', '/lib/');
+  // support .ts and .tsx, .ts,.tsx => .js
+  if (ext === '.ts' || ext === '.tsx') {
+    return libfile.replace(/.tsx?$/, '.js')
+  }
   if (ext === '' || (ext !== '.js' && ext !== '.json')) {
     libfile = libfile + '.js';
   }
